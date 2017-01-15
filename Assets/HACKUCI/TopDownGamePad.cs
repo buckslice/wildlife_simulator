@@ -117,8 +117,8 @@ public class TopDownGamePad : MonoBehaviour {
         }
 
         WaitForSeconds one = new WaitForSeconds(1.0f);
-        for(int i = 0; i < 10; ++i) {
-            netPlayer.SendCmd("countdown", new MessageNumber(10-i));
+        for(int i = 0; i < 5; ++i) {
+            netPlayer.SendCmd("countdown", new MessageNumber(5-i));
             yield return one;
         }
         netPlayer.SendCmd("countdown", new MessageNumber(0));   // so u dont wait on last one

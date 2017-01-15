@@ -14,6 +14,8 @@ public class AnimalController : MonoBehaviour {
     Transform tform;
     GameObject shadow;
     bool grounded = false;
+    bool dead = false;
+    public bool blockMovement = false;
 
     // Use this for initialization
     void Start() {
@@ -38,7 +40,7 @@ public class AnimalController : MonoBehaviour {
 
     // Update is called once per frame
     void FixedUpdate() {
-        if (dead) {
+        if (dead || blockMovement) {
             return;
         }
         if (gp.touching) {
@@ -96,14 +98,13 @@ public class AnimalController : MonoBehaviour {
         Destroy(gameObject);
     }
 
-    bool dead = false;
     void OnDeath() {
         rb.useGravity = true;
         dead = true;
         Vector3 scale = model.localScale;
         scale.y = -scale.y;
         model.localScale = scale;
-        Destroy(shadow, 10.0f); // thats how long restart is
+        Destroy(shadow, 5.0f); // thats how long restart is
         //Destroy(this);
     }
 

@@ -32,8 +32,8 @@ public class GameManager : MonoBehaviour {
         "Rabbit",
         "Bear",
         "Eagle",
+        "Snake",
         //"Squirrel",
-        //"Snake",
         //"Vulture",
         //"Spider" // to kill birds??
         //"Human",
@@ -43,8 +43,8 @@ public class GameManager : MonoBehaviour {
         "Tap to hop in the air",
         "Tap to do a swipe attack", //"Tap to eat berries or defend yourself",
         "Tap to begin dive attack",
-        "Tap to (climb or jump) from trees",
         "Tap to strike forward",
+        "Tap to (climb or jump) from trees",
         "Tap to land or take off",
         "Tap to shoot"
     };
@@ -53,8 +53,8 @@ public class GameManager : MonoBehaviour {
         "Objective: Run from everything",
         "Objective: Kill everything", //"Eat berries", 
         "Objective: Kill critters",
+        "Objective: Kill bears",
         "Objective: Eat nuts",
-        "Objective: Kill other predators",
         "Objective: Eat dead things",
         "Objective: Hunt them beasts"
     };

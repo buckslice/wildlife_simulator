@@ -5,7 +5,7 @@ using UnityEngine;
 public class Eagle : MonoBehaviour {
 
     const float cruisingAltitude = 4.0f;
-    const float landingAltitude = 0.5f;
+    const float landingAltitude = 0.2f;
 
     // Use this for initialization
     void Start() {
