@@ -17,7 +17,7 @@ public class ZombieController : MonoBehaviour {
         sr = GetComponent<SpriteRenderer>();
 
         gamepad.OnDisconnect += Remove;
-        gamepad.OnColorSet += ColorChanged;
+        gamepad.OnColorChanged += ColorChanged;
 	}
 	
 	// Update is called once per frame

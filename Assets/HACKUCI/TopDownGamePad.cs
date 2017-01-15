@@ -14,7 +14,6 @@ public class TopDownGamePad : MonoBehaviour {
     public bool touching = false;
     public Vector2 dir;
     Quaternion targetRot;
-    public bool flipY = true;
 
     public Color color;
     Color oldColor;
@@ -22,12 +21,15 @@ public class TopDownGamePad : MonoBehaviour {
     static int s_colorCount = 0;    // so diff players have diff colors
 
     public event Action OnDisconnect;
-    public event Action<Color> OnColorSet;
+    public event Action<Color> OnColorChanged;
+    public event Action OnTap;
 
     // TODO change this to use Action
     public event System.EventHandler<System.EventArgs> OnNameChange;
 
     HFTPlayerNameManager playerNameManager;
+    float timeSinceTouched = 100.0f;
+    const float tapTouchThreshold = 0.25f;
 
     const int angleIntervals = 32;  // make sure this is same in controller js
     // angles represents counterclockwise angle from 0-31 starting at the right
@@ -47,12 +49,12 @@ public class TopDownGamePad : MonoBehaviour {
         public Color color;
     }
 
-    void Awake() {
-        PickRandomColor();
+    private class MessageDied {
+
     }
 
-    TopDownGamePad() {
-
+    void Awake() {
+        PickRandomColor();
     }
 
     void PickRandomColor() {
@@ -88,13 +90,22 @@ public class TopDownGamePad : MonoBehaviour {
         // then tell it can play.
         netPlayer.SendCmd("play");
         SendColor();
-        Debug.Log("initialized player");
+        if (netPlayer != null) {
+            netPlayer.SendCmd("character", GameManager.get.NextCharacter());
+        }
+        //Debug.Log("initialized player");
     }
 
     void HandleTouch(MessageTouch data) {
         touching = data.touching;
         if (touching) {
             SetDir(data.angle);
+            timeSinceTouched = 0.0f;
+        } else if (timeSinceTouched < tapTouchThreshold) {
+            if (OnTap != null) {
+                OnTap();    // do action move
+            }
+            timeSinceTouched = 100.0f;  // make sure no double action
         }
         //Debug.Log("TOUCH EVENT " + Time.time);
     }
@@ -119,9 +130,8 @@ public class TopDownGamePad : MonoBehaviour {
     }
 
     void HandleDisconnect(object sender, System.EventArgs e) {
-        Action handler = OnDisconnect;
-        if (handler != null) {
-            handler();
+        if(OnDisconnect != null) {
+            OnDisconnect();
         }
     }
 
@@ -133,16 +143,10 @@ public class TopDownGamePad : MonoBehaviour {
         }
     }
 
-    public void ReturnPlayer() {
-        if (netPlayer != null) {
-            HFTGamepadHelper.helper.playerSpawner.ReturnPlayer(netPlayer);
-        }
-    }
-
     // Update is called once per frame
     void Update() {
-        transform.rotation = Quaternion.Lerp(transform.rotation, targetRot, 0.1f);
-
+        //transform.rotation = Quaternion.Lerp(transform.rotation, targetRot, 0.1f);
+        timeSinceTouched += Time.deltaTime;
         if (oldColor != color) {
             oldColor = color;
             SendColor();
@@ -153,9 +157,10 @@ public class TopDownGamePad : MonoBehaviour {
         if (netPlayer != null) {
             netPlayer.SendCmd("color", new MessageColor(color));
 
-            if(OnColorSet != null) {
-                OnColorSet(color);
+            if (OnColorChanged != null) {
+                OnColorChanged(color);
             }
         }
     }
+
 }

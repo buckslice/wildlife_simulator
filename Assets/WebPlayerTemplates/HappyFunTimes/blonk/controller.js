@@ -8,6 +8,8 @@ var mobileHacks = window.sampleUI.mobileHacks;
 var strings = window.sampleUI.strings;
 var touch = window.sampleUI.touch;
 var inputElem = document.getElementById("inputarea");
+var topTitle = document.getElementById("toptitle");
+var botTitle = document.getElementById("bottitle");
 
 var $ = document.getElementById.bind(document);
 var globals = {
@@ -55,35 +57,16 @@ function handlePlay() {
   commonUI.setOrientation("portrait", true);
 }
 
+function handleCharacter(data){
+	toptitle.innerHTML = "You are a " + data.character;
+	bottitle.innerHTML = data.instructions + "<br>" + data.objective;
+}
+
 client.addEventListener('color', handleColor);
 client.addEventListener('play', handlePlay);
+client.addEventListener('character', handleCharacter);
 
 commonUI.setupStandardControllerUI(client, globals);
-
-var maxIndex = 10;
-var usedIndices = [];
-var pointerIdToIndex = {};
-function getPointerIndex(e, start) {
-  var index = pointerIdToIndex[e.pointerId];
-  if (index === undefined) {
-    for (var ii = 0; ii < maxIndex; ++ii) {
-      if (!usedIndices[ii]) {
-        usedIndices[ii] = start;
-        index = ii;
-        break;
-      }
-    }
-    if (index === undefined) {
-      throw "what";
-    }
-    pointerIdToIndex[e.pointerId] = index;
-  }
-  if (!start) {
-    delete pointerIdToIndex[e.pointerId];
-    usedIndices[index] = undefined;
-  }
-  return index;
-}
 
 function getAngle(event){
 	var target = event.target;
@@ -113,12 +96,11 @@ inputElem.addEventListener('pointermove', function(event){
 
 function handleTouchDown(e) {
 	lastA = getAngle(e);
-	client.sendCmd('touch', { touching:true , angle: lastA });
-	
+	client.sendCmd('touch', { touching: true , angle: lastA });	
 }
 
 function handleTouchUp(e) {
-	client.sendCmd('touch', { touching:false , angle: 0 });
+	client.sendCmd('touch', { touching: false , angle: 0 });
 }
 
 inputElem.addEventListener('pointerdown', handleTouchDown);
