@@ -6,10 +6,9 @@ using HappyFunTimes;
 public class PlayerSetup : MonoBehaviour {
 
     void InitializeNetPlayer(SpawnInfo spawnInfo) {
-
-        GameObject newPrefab = GameManager.instance.GetNextCharacter();
-        newPrefab.SendMessage("InitializeFromAnimalPick", spawnInfo);
-
+        AnimalStartInfo asi = GameManager.instance.GetNextAnimal();
+        spawnInfo.data = asi.data;
+        asi.prefab.GetComponent<TopDownGamePad>().InitializeFromAnimalPick(spawnInfo);
         Destroy(gameObject);
     }
 }

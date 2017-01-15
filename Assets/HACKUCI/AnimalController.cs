@@ -11,7 +11,6 @@ public class AnimalController : MonoBehaviour {
     Transform model;
     Transform cam;
     Transform tform;
-    float origScaleX;
     GameObject shadow;
     bool grounded = false;
 
@@ -21,19 +20,18 @@ public class AnimalController : MonoBehaviour {
         rb = GetComponent<Rigidbody>();
         tform = transform;
         model = tform.Find("Model");
-        origScaleX = tform.localScale.x;
         cam = Camera.main.transform;
 
-        gp.OnTap += OnTap;
-        gp.OnDisconnect += OnDisconnect;
+        gp.OnDisconnect += CleanUp;
         gp.OnColorChanged += ColorChanged;
 
-        // spawn a shadow object on the ground that follows animals
+        // spawn a shadow object on the ground that follows animals x/z
         shadow = (GameObject)Instantiate(GameManager.instance.shadowPrefab, GameManager.instance.shadowHolder);
         ShadowTrackTransform stt = shadow.GetComponent<ShadowTrackTransform>();
         stt.tracked = tform;
         stt.tform.localScale = model.localScale;
 
+        tform.forward = cam.right;  // start animals off facing right
     }
 
     // Update is called once per frame
@@ -50,31 +48,13 @@ public class AnimalController : MonoBehaviour {
             rb.velocity = xzVel * moveSpeed + upVel;
             tform.forward = xzVel;    // point transform in movement direction
 
-            // flip sprite based on x vel
-            //Vector3 scale = tform.localScale;
-            //bool isFlipped = scale.x < 0.0f;
-            //if (gp.dir.x > 0 && isFlipped) {
-            //    scale.x = origScaleX;
-            //    tform.localScale = scale;
-            //} else if (gp.dir.x < 0 && !isFlipped) {
-            //    scale.x = -origScaleX;
-            //    tform.localScale = scale;
-            //}
-
-        } else {
+        } else {    // zero out x/z movement
             Vector3 vel = rb.velocity;
             vel.x = 0.0f;
             vel.z = 0.0f;
             rb.velocity = vel;
         }
 
-        // check if grounded for bunny
-        if (Physics.SphereCast(new Ray(tform.position + Vector3.up * 0.3f, Vector3.down), 0.25f, 0.1f)
-            && rb.velocity.y < 1.0f) {
-            grounded = true;
-        }
-
-        //Debug.Log(gamepad.dir);    
     }
     
     void Update() {
@@ -93,26 +73,11 @@ public class AnimalController : MonoBehaviour {
         model.localScale = scale;
     }
 
-    void OnCollisionEnter(Collision c) {
-
-    }
-
-    void OnTap() {
-
-        if (grounded) {
-            //Debug.Log("Someone tapped! " + Time.time);
-            Vector3 vel = rb.velocity;
-            vel.y = 8.0f;
-            rb.velocity = vel;
-            grounded = false;
-        }
-    }
-
     void ColorChanged(Color c) {
         //sr.color = c;
     }
 
-    void OnDisconnect() {
+    void CleanUp() {
         Destroy(shadow);
         Destroy(gameObject);
     }

@@ -75,7 +75,7 @@ public class TopDownGamePad : MonoBehaviour {
         color = HFTColorUtils.HSVAToColor(hsva);
     }
 
-    void InitializeFromAnimalPick(SpawnInfo spawnInfo) {
+    public void InitializeFromAnimalPick(SpawnInfo spawnInfo) {
         netPlayer = spawnInfo.netPlayer;
         netPlayer.OnDisconnect += HandleDisconnect;
 
@@ -86,14 +86,31 @@ public class TopDownGamePad : MonoBehaviour {
         playerNameManager = new HFTPlayerNameManager(netPlayer);
         playerNameManager.OnNameChange += HandleNameChange;
 
-        // If the controller is showing the player "game full"
-        // then tell it can play.
+        // send play command
         netPlayer.SendCmd("play");
         SendColor();
         if (netPlayer != null) {
-            netPlayer.SendCmd("character", GameManager.instance.NextCharacter());
+            netPlayer.SendCmd("character", spawnInfo.data);
         }
         //Debug.Log("initialized player");
+    }
+
+    bool restarting = false;
+    public void RestartPlayer() {
+        if (restarting) {
+            return;
+        }
+        restarting = true;
+
+        // send message to phone that u died (countdown too maybe?)
+
+        AnimalStartInfo asi = GameManager.instance.GetNextAnimal();
+        SpawnInfo spawnInfo = new SpawnInfo();
+        spawnInfo.netPlayer = netPlayer;
+        spawnInfo.data = asi.data;
+        asi.prefab.GetComponent<TopDownGamePad>().InitializeFromAnimalPick(spawnInfo);
+
+        OnDisconnect(); // more of a cleanup really
     }
 
     void HandleTouch(MessageTouch data) {

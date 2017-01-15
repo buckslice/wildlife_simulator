@@ -3,6 +3,12 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
+public enum Animals {
+    BUNNY,
+    BEAR,
+    EAGLE,
+}
+
 public class GameManager : MonoBehaviour {
     public Text connectionInfo;
 
@@ -11,6 +17,7 @@ public class GameManager : MonoBehaviour {
     public Object shadowPrefab;
     public Transform shadowHolder;
     public Transform spawnCenter;
+
 
     public static GameManager instance = null;
     void Awake() {
@@ -21,7 +28,7 @@ public class GameManager : MonoBehaviour {
         }
     }
 
-    static readonly string[] animals = {
+    public static readonly string[] animals = {
         "Rabbit",
         "Bear",
         //"Squirrel",
@@ -32,9 +39,9 @@ public class GameManager : MonoBehaviour {
         //"Human",
     };
 
-    static readonly string[] animalInstructions = {
+    public static readonly string[] animalInstructions = {
         "Tap to hop in the air",
-        "Tap to eat berries or defend yourself",
+        "Tap to do a swipe attack", //"Tap to eat berries or defend yourself",
         "Tap to (climb or jump) from trees",
         "Tap to begin dive attack",
         "Tap to strike forward",
@@ -42,9 +49,9 @@ public class GameManager : MonoBehaviour {
         "Tap to shoot"
     };
 
-    static readonly string[] animalObjectives = {
+    public static readonly string[] animalObjectives = {
         "Stay alive as long as possible",
-        "Eat berries",
+        "Kill everything", //"Eat berries", 
         "Eat nuts",
         "Kill critters",
         "Kill other predators",
@@ -52,33 +59,19 @@ public class GameManager : MonoBehaviour {
         "Hunt them beasts"
     };
 
-    public class MessageCharacter {
-        public MessageCharacter(int index) {
-            character = animals[index];
-            instructions = animalInstructions[index];
-            objective = animalObjectives[index];
-        }
-        public string character;
-        public string instructions;
-        public string objective;
-    }
-
-    public MessageCharacter NextCharacter() {
-        // TODO put spawn algo here
-
-        int index = Random.Range(0, animals.Length);
-        return new MessageCharacter(index);
-    }
-
     // instantiates and returns reference to correct prefab
-    public GameObject GetNextCharacter() {
+    // as well as string object to send to phone
+    public AnimalStartInfo GetNextAnimal() {
+        // TODO make more complicated spawn algorithm
         int index = Random.Range(0, animalPrefabs.Length);
+
         Vector3 rand = Random.insideUnitCircle * 10.0f;
         rand.z = rand.y;
         rand.y = 0.0f;
         Vector3 spawnPoint = spawnCenter.position + Vector3.up * 0.5f + rand;
         GameObject prefab = (GameObject)Instantiate(animalPrefabs[index], spawnPoint, Quaternion.identity);
-        return prefab;
+
+        return new AnimalStartInfo(prefab, index);
     }
 
     // Use this for initialization
@@ -93,3 +86,26 @@ public class GameManager : MonoBehaviour {
         }
     }
 }
+
+public class AnimalInfo {
+    public AnimalInfo(int index) {
+        character = GameManager.animals[index];
+        instructions = GameManager.animalInstructions[index];
+        objective = GameManager.animalObjectives[index];
+    }
+    public string character;
+    public string instructions;
+    public string objective;
+}
+
+public class AnimalStartInfo {
+    public AnimalStartInfo(GameObject prefab, int index) {
+        this.prefab = prefab;
+        data = new AnimalInfo(index);
+    }
+
+    public GameObject prefab;
+    public AnimalInfo data;
+}
+
+
