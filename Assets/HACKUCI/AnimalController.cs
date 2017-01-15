@@ -14,6 +14,8 @@ public class AnimalController : MonoBehaviour {
     GameObject shadow;
     bool grounded = false;
 
+    int health = 1;
+
     // Use this for initialization
     void Start() {
         gp = GetComponent<TopDownGamePad>();
@@ -22,7 +24,8 @@ public class AnimalController : MonoBehaviour {
         model = tform.Find("Model");
         cam = Camera.main.transform;
 
-        gp.OnDisconnect += CleanUp;
+        gp.OnDisconnect += OnDisconnect;
+        gp.OnDeath += OnDeath;
         gp.OnColorChanged += ColorChanged;
 
         // spawn a shadow object on the ground that follows animals x/z
@@ -77,8 +80,17 @@ public class AnimalController : MonoBehaviour {
         //sr.color = c;
     }
 
-    void CleanUp() {
+    void OnDisconnect() {
         Destroy(shadow);
         Destroy(gameObject);
+    }
+
+    void OnDeath() {
+        rb.isKinematic = true;
+        Vector3 scale = model.localScale;
+        scale.y = -scale.y;
+        model.localScale = scale;
+        Destroy(shadow, 10.0f); // thats how long restart is
+        Destroy(this);
     }
 }

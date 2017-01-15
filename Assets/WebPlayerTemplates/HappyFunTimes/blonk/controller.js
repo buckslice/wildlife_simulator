@@ -10,6 +10,7 @@ var touch = window.sampleUI.touch;
 var inputElem = document.getElementById("inputarea");
 var topTitle = document.getElementById("toptitle");
 var botTitle = document.getElementById("bottitle");
+var crosshair = document.getElementById("crosshair");
 
 var $ = document.getElementById.bind(document);
 var globals = {
@@ -62,9 +63,26 @@ function handleCharacter(data){
 	bottitle.innerHTML = data.instructions + "<br>" + data.objective;
 }
 
+function handleScore(data){
+	toptitle.innerHTML = "You died!";
+	bottitle.innerHTML = "You scored " + data.number + " points!";
+}
+
+function handleCountdown(data){
+	if(data.number > 0){
+		crosshair.innerHTML = data.number;
+		crosshair.style.fontSize = "8em";
+	}else{
+		crosshair.innerHTML = "+";
+		crosshair.style.fontSize = "3em";
+	}
+}
+
 client.addEventListener('color', handleColor);
 client.addEventListener('play', handlePlay);
 client.addEventListener('character', handleCharacter);
+client.addEventListener('score', handleScore);
+client.addEventListener('countdown', handleCountdown);
 
 commonUI.setupStandardControllerUI(client, globals);
 

@@ -21,11 +21,9 @@
   <div id="hft-content">
     <div id="gamearea" class="fixheight">
 	  <div id="inputarea" class="hft-fullcenter fixheight">
-	  	<h2 id = "toptitle" class = "hft-istruction noevents"> Welcome to Wildlife Simulator! </h2>
-	    <div class="hft-instruction hft-fullcenter whiteoutline noevents">
-               +
-        </div>
-		<div id = "bfooter" class = "hft-istruction noevents"><h2 id = "bottitle"></h2></div>
+	  	<div id = "bheader" class = "noevents"><h1 id = "toptitle"><br><br><br>Welcome to Wildlife Simulator!</h1></div>
+	    <div id="crosshair" class="hft-fullcenter noevents">+</div>
+		<div id = "bfooter" class = "noevents"><h2 id = "bottitle"></h2></div>
 	  </div>
     </div>
 
@@ -33,10 +31,10 @@
 linear-gradient(
   to bottom,
   %(dark)s,
-  %(dark)s  14%,
-  %(light)s 14%,
-  %(light)s 86%,
-  %(dark)s  86%,
+  %(dark)s  20%,
+  %(light)s 20%,
+  %(light)s 80%,
+  %(dark)s  80%,
   %(dark)s
 )
     </script>

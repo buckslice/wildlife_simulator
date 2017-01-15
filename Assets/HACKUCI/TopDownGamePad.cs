@@ -20,6 +20,7 @@ public class TopDownGamePad : MonoBehaviour {
 
     static int s_colorCount = 0;    // so diff players have diff colors
 
+    public event Action OnDeath;
     public event Action OnDisconnect;
     public event Action<Color> OnColorChanged;
     public event Action OnTap;
@@ -29,7 +30,7 @@ public class TopDownGamePad : MonoBehaviour {
 
     HFTPlayerNameManager playerNameManager;
     float timeSinceTouched = 100.0f;
-    const float tapTouchThreshold = 0.25f;
+    const float tapTouchThreshold = 0.2f;
 
     const int angleIntervals = 32;  // make sure this is same in controller js
     // angles represents counterclockwise angle from 0-31 starting at the right
@@ -49,8 +50,11 @@ public class TopDownGamePad : MonoBehaviour {
         public Color color;
     }
 
-    private class MessageDied {
-
+    private class MessageNumber {
+        public MessageNumber(int number) {
+            this.number = number;
+        }
+        public int number;
     }
 
     void Awake() {
@@ -102,7 +106,22 @@ public class TopDownGamePad : MonoBehaviour {
         }
         restarting = true;
 
-        // send message to phone that u died (countdown too maybe?)
+        StartCoroutine(RestartRoutine());
+
+    }
+    
+    IEnumerator RestartRoutine() {
+        netPlayer.SendCmd("score", new MessageNumber(1));
+        if (OnDeath != null) {
+            OnDeath();
+        }
+
+        WaitForSeconds one = new WaitForSeconds(1.0f);
+        for(int i = 0; i < 10; ++i) {
+            netPlayer.SendCmd("countdown", new MessageNumber(10-i));
+            yield return one;
+        }
+        netPlayer.SendCmd("countdown", new MessageNumber(0));   // so u dont wait on last one
 
         AnimalStartInfo asi = GameManager.instance.GetNextAnimal();
         SpawnInfo spawnInfo = new SpawnInfo();
@@ -110,10 +129,13 @@ public class TopDownGamePad : MonoBehaviour {
         spawnInfo.data = asi.data;
         asi.prefab.GetComponent<TopDownGamePad>().InitializeFromAnimalPick(spawnInfo);
 
-        OnDisconnect(); // more of a cleanup really
+        Destroy(gameObject);
     }
 
     void HandleTouch(MessageTouch data) {
+        if (restarting) {
+            return;
+        }
         touching = data.touching;
         if (touching) {
             SetDir(data.angle);
@@ -128,6 +150,9 @@ public class TopDownGamePad : MonoBehaviour {
     }
 
     void HandleTouchDir(MessageTouchDir data) {
+        if (restarting) {
+            return;
+        }
         //Debug.Log(data.angle);
         SetDir(data.angle);
     }
