@@ -5,10 +5,10 @@ using UnityEngine;
 public class ShadowTrackTransform : MonoBehaviour {
 
     public Transform tracked;
-    Transform tform;
+    public Transform tform;
 
 	// Use this for initialization
-	void Start () {
+	void Awake () {
         tform = transform;
 	}
 	

@@ -5,13 +5,17 @@ using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour {
     public Text connectionInfo;
+
+    public Object[] animalPrefabs;
+
     public Object shadowPrefab;
     public Transform shadowHolder;
+    public Transform spawnCenter;
 
-    public static GameManager get = null;
+    public static GameManager instance = null;
     void Awake() {
-        if(get == null) {
-            get = this;
+        if(instance == null) {
+            instance = this;
         } else {
             Destroy(gameObject);
         }
@@ -19,19 +23,19 @@ public class GameManager : MonoBehaviour {
 
     static readonly string[] animals = {
         "Rabbit",
-        "Squirrel",
         "Bear",
-        "Eagle",
-        "Snake",
-        "Vulture",
+        //"Squirrel",
+        //"Eagle",
+        //"Snake",
+        //"Vulture",
         //"Spider" // to kill birds??
-        "Human",
+        //"Human",
     };
 
     static readonly string[] animalInstructions = {
         "Tap to hop in the air",
-        "Tap to (climb or jump) from trees",
         "Tap to eat berries or defend yourself",
+        "Tap to (climb or jump) from trees",
         "Tap to begin dive attack",
         "Tap to strike forward",
         "Tap to land or take off",
@@ -40,8 +44,8 @@ public class GameManager : MonoBehaviour {
 
     static readonly string[] animalObjectives = {
         "Stay alive as long as possible",
-        "Eat nuts",
         "Eat berries",
+        "Eat nuts",
         "Kill critters",
         "Kill other predators",
         "Eat dead things",
@@ -64,6 +68,17 @@ public class GameManager : MonoBehaviour {
 
         int index = Random.Range(0, animals.Length);
         return new MessageCharacter(index);
+    }
+
+    // instantiates and returns reference to correct prefab
+    public GameObject GetNextCharacter() {
+        int index = Random.Range(0, animalPrefabs.Length);
+        Vector3 rand = Random.insideUnitCircle * 10.0f;
+        rand.z = rand.y;
+        rand.y = 0.0f;
+        Vector3 spawnPoint = spawnCenter.position + Vector3.up * 0.5f + rand;
+        GameObject prefab = (GameObject)Instantiate(animalPrefabs[index], spawnPoint, Quaternion.identity);
+        return prefab;
     }
 
     // Use this for initialization

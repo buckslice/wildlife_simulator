@@ -14,6 +14,7 @@ public class CameraBillboard : MonoBehaviour {
 	}
 
     void OnWillRenderObject() {
+        return;
         Vector3 viewDir = tform.position - mainCam.position;
         viewDir.y = 0.0f;   // dont want it to tilt up probly
         transform.rotation = Quaternion.LookRotation(viewDir);

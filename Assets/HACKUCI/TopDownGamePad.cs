@@ -13,7 +13,7 @@ public class TopDownGamePad : MonoBehaviour {
 
     public bool touching = false;
     public Vector2 dir;
-    Quaternion targetRot;
+    //Quaternion targetRot;
 
     public Color color;
     Color oldColor;
@@ -75,7 +75,7 @@ public class TopDownGamePad : MonoBehaviour {
         color = HFTColorUtils.HSVAToColor(hsva);
     }
 
-    void InitializeNetPlayer(SpawnInfo spawnInfo) {
+    void InitializeFromAnimalPick(SpawnInfo spawnInfo) {
         netPlayer = spawnInfo.netPlayer;
         netPlayer.OnDisconnect += HandleDisconnect;
 
@@ -91,7 +91,7 @@ public class TopDownGamePad : MonoBehaviour {
         netPlayer.SendCmd("play");
         SendColor();
         if (netPlayer != null) {
-            netPlayer.SendCmd("character", GameManager.get.NextCharacter());
+            netPlayer.SendCmd("character", GameManager.instance.NextCharacter());
         }
         //Debug.Log("initialized player");
     }
@@ -118,7 +118,7 @@ public class TopDownGamePad : MonoBehaviour {
     void SetDir(int angle) {
         Quaternion q = Quaternion.AngleAxis(angle * 360.0f / angleIntervals, Vector3.forward);
         dir = q * Vector2.right;
-        targetRot = q;
+        //targetRot = q;
     }
 
     void OnDestroy() {
