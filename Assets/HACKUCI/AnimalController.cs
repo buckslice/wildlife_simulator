@@ -5,6 +5,7 @@ using UnityEngine;
 public class AnimalController : MonoBehaviour {
 
     public float moveSpeed = 1.0f;
+    public int health = 1;
 
     TopDownGamePad gp;
     Rigidbody rb;
@@ -13,8 +14,6 @@ public class AnimalController : MonoBehaviour {
     Transform tform;
     GameObject shadow;
     bool grounded = false;
-
-    int health = 1;
 
     // Use this for initialization
     void Start() {
@@ -39,8 +38,10 @@ public class AnimalController : MonoBehaviour {
 
     // Update is called once per frame
     void FixedUpdate() {
+        if (dead) {
+            return;
+        }
         if (gp.touching) {
-
             // get camera forward vector with no y component
             Vector3 xzCamForward = cam.forward;
             xzCamForward.y = 0.0f;
@@ -61,12 +62,15 @@ public class AnimalController : MonoBehaviour {
     }
     
     void Update() {
+        if (dead) {
+            return;
+        }
         // definitely over complicated and bad
         Vector3 viewDir = tform.position - cam.position;
         viewDir.y = 0.0f;
         Vector3 viewRight = -Vector3.Cross(viewDir, Vector3.up);
         float angle = Vector3.Angle(viewRight, -tform.right);
-        angle = Mathf.Clamp(angle, 30.0f, 150.0f);  // limit from going full front back
+        angle = Mathf.Clamp(angle, 35.0f, 145.0f);  // limit from going full front back
         angle *= Vector3.Dot(tform.forward, cam.right) > 0.0f ? -1.0f : 1.0f; 
         model.rotation = Quaternion.AngleAxis(angle, Vector3.up) * Quaternion.LookRotation(viewRight);
 
@@ -74,6 +78,13 @@ public class AnimalController : MonoBehaviour {
         Vector3 scale = model.localScale;
         scale.z = Vector3.Dot(tform.right, cam.forward) > 0 ? -1.0f : 1.0f;
         model.localScale = scale;
+    }
+
+    public void Damage() {
+        health--;
+        if (health <= 0) {
+            gp.RestartPlayer();
+        }
     }
 
     void ColorChanged(Color c) {
@@ -85,12 +96,26 @@ public class AnimalController : MonoBehaviour {
         Destroy(gameObject);
     }
 
+    bool dead = false;
     void OnDeath() {
-        rb.isKinematic = true;
+        rb.useGravity = true;
+        dead = true;
         Vector3 scale = model.localScale;
         scale.y = -scale.y;
         model.localScale = scale;
         Destroy(shadow, 10.0f); // thats how long restart is
-        Destroy(this);
+        //Destroy(this);
+    }
+
+    private void OnCollisionEnter(Collision collision) {
+        if (collision.collider.CompareTag("Ground") && dead) {
+            rb.isKinematic = true;
+        }
+    }
+
+    private void OnCollisionStay(Collision collision) {
+        if (collision.collider.CompareTag("Ground") && dead) {
+            rb.isKinematic = true;
+        }
     }
 }

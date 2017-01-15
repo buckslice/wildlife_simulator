@@ -60,7 +60,7 @@ function handlePlay() {
 
 function handleCharacter(data){
 	toptitle.innerHTML = "You are a " + data.character;
-	bottitle.innerHTML = data.instructions + "<br>" + data.objective;
+	bottitle.innerHTML = data.instructions + "<br><br>" + data.objective;
 }
 
 function handleScore(data){

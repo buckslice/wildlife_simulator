@@ -31,8 +31,8 @@ public class GameManager : MonoBehaviour {
     public static readonly string[] animals = {
         "Rabbit",
         "Bear",
+        "Eagle",
         //"Squirrel",
-        //"Eagle",
         //"Snake",
         //"Vulture",
         //"Spider" // to kill birds??
@@ -42,21 +42,21 @@ public class GameManager : MonoBehaviour {
     public static readonly string[] animalInstructions = {
         "Tap to hop in the air",
         "Tap to do a swipe attack", //"Tap to eat berries or defend yourself",
-        "Tap to (climb or jump) from trees",
         "Tap to begin dive attack",
+        "Tap to (climb or jump) from trees",
         "Tap to strike forward",
         "Tap to land or take off",
         "Tap to shoot"
     };
 
     public static readonly string[] animalObjectives = {
-        "Stay alive as long as possible",
-        "Kill everything", //"Eat berries", 
-        "Eat nuts",
-        "Kill critters",
-        "Kill other predators",
-        "Eat dead things",
-        "Hunt them beasts"
+        "Objective: Run from everything",
+        "Objective: Kill everything", //"Eat berries", 
+        "Objective: Kill critters",
+        "Objective: Eat nuts",
+        "Objective: Kill other predators",
+        "Objective: Eat dead things",
+        "Objective: Hunt them beasts"
     };
 
     // instantiates and returns reference to correct prefab

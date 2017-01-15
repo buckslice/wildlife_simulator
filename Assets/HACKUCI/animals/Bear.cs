@@ -28,8 +28,8 @@ public class Bear : MonoBehaviour {
         thrashObj.SetActive(true);
         Transform tf = thrashObj.transform;
         float t = 0.0f;
-        while (t < 0.5f) {
-            tf.localRotation = Quaternion.Euler(90.0f, 0.0f, Mathf.Lerp(-200.0f, 10.0f, t * 2.0f));
+        while (t < 0.25f) {
+            tf.localRotation = Quaternion.Euler(90.0f, 0.0f, Mathf.Lerp(-200.0f, 10.0f, t * 4.0f));
             t += Time.deltaTime;
             yield return null;
         }
@@ -39,12 +39,12 @@ public class Bear : MonoBehaviour {
     }
 
     void OnTriggerEnter(Collider other) {
-        if (col == other || other.CompareTag("StaticGeometry")) {
+        if (col == other || other.CompareTag("Ground") || other.CompareTag("StaticGeometry")) {
             return;
         }
-        TopDownGamePad tdgp = other.GetComponent<TopDownGamePad>();
-        if (tdgp) {
-            tdgp.RestartPlayer();
+        AnimalController ac = other.GetComponent<AnimalController>();
+        if (ac) {
+            ac.Damage();
         }
     }
 }
